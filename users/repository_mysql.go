@@ -1,8 +1,8 @@
 package users
 
 import (
-	"api-mysql/config"
-	"api-mysql/models"
+	"api-mrdb/config"
+	"api-mrdb/models"
 	"context"
 	"database/sql"
 	"errors"
