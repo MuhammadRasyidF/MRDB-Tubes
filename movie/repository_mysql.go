@@ -1,8 +1,8 @@
 package movie
 
 import (
-	"api-mysql/config"
-	"api-mysql/models"
+	"api-mrdb/config"
+	"api-mrdb/models"
 	"context"
 	"database/sql"
 	"errors"
@@ -11,22 +11,22 @@ import (
 )
 
 const (
-	table          = "movies"
+	table          = "TB_MOVIES"
 	layoutDateTime = "2006-01-02 15:04:05"
 )
 
 // GetAll Movie
-func GetAll(ctx context.Context) ([]models.Movie, error) {
+func GetAll(ctx context.Context) ([]models.Tb_movies, error) {
 
-	var movies []models.Movie
+	var movies []models.Tb_movies
 
-	db, err := config.MySQL()
+	db, err := config.OracleSQL()
 
 	if err != nil {
-		log.Fatal("Cant connect to MySQL", err)
+		log.Fatal("Cant connect to OracleSQL", err)
 	}
 
-	queryText := fmt.Sprintf("SELECT * FROM %v Order By movie_id DESC", table)
+	queryText := fmt.Sprintf("SELECT * FROM %v Order By movieid DESC", table)
 
 	rowQuery, err := db.QueryContext(ctx, queryText)
 
@@ -35,16 +35,13 @@ func GetAll(ctx context.Context) ([]models.Movie, error) {
 	}
 
 	for rowQuery.Next() {
-		var movie models.Movie
+		var movie models.Tb_movies
 
-		if err = rowQuery.Scan(&movie.Movie_id,
+		if err = rowQuery.Scan(&movie.MovieId,
 			&movie.Name,
 			&movie.Description,
-			&movie.Release_date,
-			&movie.Image_url,
-			&movie.Creator_id,
-			&movie.Rate_id,
-			&movie.Star_id); err != nil {
+			&movie.ReleaseDate,
+			&movie.ImageUrl); err != nil {
 			return nil, err
 		}
 
@@ -55,30 +52,18 @@ func GetAll(ctx context.Context) ([]models.Movie, error) {
 }
 
 // Insert Movie
-func Insert(ctx context.Context, movie models.Movie) error {
-	db, err := config.MySQL()
+func Insert(ctx context.Context, movie models.Tb_movies) error {
+	db, err := config.OracleSQL()
 
 	if err != nil {
-		log.Fatal("Can't connect to MySQL", err)
+		log.Fatal("Can't connect to OracleSQL", err)
 	}
 
-	// queryText := fmt.Sprintf("INSERT INTO %v (movie_id, name, description, release_date, image_url, creator_id, rate_id, star_id) values('%v',%v, %v, %v, %v, %v, %v, %v)", table,
-	// 	movie.Movie_id,
-	// 	movie.Name,
-	// 	movie.Description,
-	// 	movie.Release_date,
-	// 	movie.Image_url,
-	// 	movie.Creator_id,
-	// 	movie.Rate_id,
-	// 	movie.Star_id,
-	// )
-
-	queryText := fmt.Sprintf("INSERT INTO %v (movie_id, name, description, release_date, image_url) values('%v','%v', '%v', '%v', '%v')", table,
-		movie.Movie_id,
+	queryText := fmt.Sprintf("INSERT INTO %v (name, description, releasedate, imageurl) values('%v', '%v', '%v', '%v')", table,
 		movie.Name,
 		movie.Description,
-		movie.Release_date,
-		movie.Image_url,
+		movie.ReleaseDate,
+		movie.ImageUrl,
 	)
 
 	_, err = db.ExecContext(ctx, queryText)
@@ -90,20 +75,20 @@ func Insert(ctx context.Context, movie models.Movie) error {
 }
 
 // Update Movie
-func Update(ctx context.Context, movie models.Movie, id string) error {
+func Update(ctx context.Context, movie models.Tb_movies, id string) error {
 
-	db, err := config.MySQL()
+	db, err := config.OracleSQL()
 
 	if err != nil {
-		log.Fatal("Can't connect to MySQL", err)
+		log.Fatal("Can't connect to OracleSQL", err)
 	}
 
-	queryText := fmt.Sprintf("UPDATE %v set name ='%s', description ='%s', release_date ='%s', image_url = '%s' where movie_id = %s",
+	queryText := fmt.Sprintf("UPDATE %v set name ='%s', description ='%s', releasedate ='%s', imageurl = '%s' where movieid = %s",
 		table,
 		movie.Name,
 		movie.Description,
-		movie.Release_date,
-		movie.Image_url,
+		movie.ReleaseDate,
+		movie.ImageUrl,
 		id,
 	)
 	fmt.Println(queryText)
@@ -119,13 +104,13 @@ func Update(ctx context.Context, movie models.Movie, id string) error {
 
 // Delete Movie
 func Delete(ctx context.Context, id string) error {
-	db, err := config.MySQL()
+	db, err := config.OracleSQL()
 
 	if err != nil {
-		log.Fatal("Can't connect to MySQL", err)
+		log.Fatal("Can't connect to OracleSQL", err)
 	}
 
-	queryText := fmt.Sprintf("DELETE FROM %v where movie_id = %s", table, id)
+	queryText := fmt.Sprintf("DELETE FROM %v where movieid = %s", table, id)
 
 	s, err := db.ExecContext(ctx, queryText)
 

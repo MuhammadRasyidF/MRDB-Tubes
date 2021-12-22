@@ -57,8 +57,7 @@ func Insert(ctx context.Context, comment models.Tb_comment) error {
 		log.Fatal("Can't connect to OracleSQL", err)
 	}
 
-	queryText := fmt.Sprintf("INSERT INTO %v (commentid, comment) values('%v','%v')", table,
-		comment.CommentId,
+	queryText := fmt.Sprintf("INSERT INTO %v (comment) values('%v')", table,
 		comment.Comment,
 	)
 

@@ -55,8 +55,7 @@ func Insert(ctx context.Context, genre models.Tb_genres) error {
 		log.Fatal("Can't connect to OracleSQL", err)
 	}
 
-	queryText := fmt.Sprintf("INSERT INTO %v (genreid, name) values('%v','%v')", table,
-		genre.GenreId,
+	queryText := fmt.Sprintf("INSERT INTO %v (name) values('%v')", table,
 		genre.Name,
 	)
 

@@ -55,8 +55,7 @@ func Insert(ctx context.Context, creator models.Tb_creators) error {
 		log.Fatal("Can't connect to OracleSQL", err)
 	}
 
-	queryText := fmt.Sprintf("INSERT INTO %v (Creator_id, name) values('%v','%v')", table,
-		creator.CreatorId,
+	queryText := fmt.Sprintf("INSERT INTO %v (name) values('%v')", table,
 		creator.Name,
 	)
 
