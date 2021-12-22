@@ -8,7 +8,6 @@ import (
 	"api-mysql/models"
 	"api-mysql/movie"
 	"api-mysql/rating"
-	"api-mysql/reviews"
 	"api-mysql/stars"
 	"api-mysql/users"
 	"api-mysql/utils"

@@ -1,4 +1,4 @@
-package creators
+package comment
 
 import (
 	"api-mrdb/config"
@@ -11,14 +11,13 @@ import (
 )
 
 const (
-	table          = "creators"
-	layoutDateTime = "2021-09-27 03:05:05"
+	table = "TB_COMMENT"
 )
 
-// GetAll Creators
-func GetAll(ctx context.Context) ([]models.Creators, error) {
+// GetAll comment
+func GetAll(ctx context.Context) ([]models.Tb_comment, error) {
 
-	var Creators []models.Creators
+	var comments []models.Tb_comment
 
 	db, err := config.OracleSQL()
 
@@ -26,7 +25,7 @@ func GetAll(ctx context.Context) ([]models.Creators, error) {
 		log.Fatal("Cant connect to OracleSQL", err)
 	}
 
-	queryText := fmt.Sprintf("SELECT * FROM %v Order By Creator_id DESC", table)
+	queryText := fmt.Sprintf("SELECT * FROM %v Order By commentid DESC", table)
 
 	rowQuery, err := db.QueryContext(ctx, queryText)
 
@@ -35,30 +34,32 @@ func GetAll(ctx context.Context) ([]models.Creators, error) {
 	}
 
 	for rowQuery.Next() {
-		var Creator models.Creators
+		var comment models.Tb_comment
 
-		if err = rowQuery.Scan(&Creator.Creator_id,
-			&Creator.Name); err != nil {
+		if err = rowQuery.Scan(&comment.CommentId,
+			comment.Comment,
+			comment.UserId,
+			comment.MovieId); err != nil {
 			return nil, err
 		}
 
-		Creators = append(Creators, Creator)
+		comments = append(comments, comment)
 	}
 
-	return Creators, nil
+	return comments, nil
 }
 
-// Insert Creators
-func Insert(ctx context.Context, Creator models.Creators) error {
+// Insert comment
+func Insert(ctx context.Context, comment models.Tb_comment) error {
 	db, err := config.OracleSQL()
 
 	if err != nil {
 		log.Fatal("Can't connect to OracleSQL", err)
 	}
 
-	queryText := fmt.Sprintf("INSERT INTO %v (Creator_id, name) values('%v','%v')", table,
-		Creator.Creator_id,
-		Creator.Name,
+	queryText := fmt.Sprintf("INSERT INTO %v (commentid, comment) values('%v','%v')", table,
+		comment.CommentId,
+		comment.Comment,
 	)
 
 	_, err = db.ExecContext(ctx, queryText)
@@ -69,8 +70,8 @@ func Insert(ctx context.Context, Creator models.Creators) error {
 	return nil
 }
 
-// Update Creators
-func Update(ctx context.Context, Creator models.Creators, uname string) error {
+// Update comment
+func Update(ctx context.Context, comment models.Tb_comment, id string) error {
 
 	db, err := config.OracleSQL()
 
@@ -78,10 +79,10 @@ func Update(ctx context.Context, Creator models.Creators, uname string) error {
 		log.Fatal("Can't connect to OracleSQL", err)
 	}
 
-	queryText := fmt.Sprintf("UPDATE %v set name ='%s' where name = %s",
+	queryText := fmt.Sprintf("UPDATE %v set comment ='%s' where commentid = %s",
 		table,
-		Creator.Name,
-		uname,
+		comment.Comment,
+		id,
 	)
 	fmt.Println(queryText)
 
@@ -94,15 +95,15 @@ func Update(ctx context.Context, Creator models.Creators, uname string) error {
 	return nil
 }
 
-// Delete Creators
-func Delete(ctx context.Context, uname string) error {
+// Delete comment
+func Delete(ctx context.Context, id string) error {
 	db, err := config.OracleSQL()
 
 	if err != nil {
 		log.Fatal("Can't connect to OracleSQL", err)
 	}
 
-	queryText := fmt.Sprintf("DELETE FROM %v where name = %s", table, uname)
+	queryText := fmt.Sprintf("DELETE FROM %v where commentid = %s", table, id)
 
 	s, err := db.ExecContext(ctx, queryText)
 

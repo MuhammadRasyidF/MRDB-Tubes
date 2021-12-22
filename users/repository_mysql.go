@@ -19,10 +19,10 @@ const (
 func GetAll(ctx context.Context) ([]models.Users, error) {
 	var users []models.Users
 
-	db, err := config.MySQL()
+	db, err := config.OracleSQL()
 
 	if err != nil {
-		log.Fatal("Cant connect to MySQL", err)
+		log.Fatal("Cant connect to OracleSQL", err)
 	}
 
 	queryText := fmt.Sprintf("SELECT * FROM %v Order By user_id DESC", table)
@@ -51,10 +51,10 @@ func GetAll(ctx context.Context) ([]models.Users, error) {
 
 // Insert user
 func Insert(ctx context.Context, user models.Users) error {
-	db, err := config.MySQL()
+	db, err := config.OracleSQL()
 
 	if err != nil {
-		log.Fatal("Can't connect to MySQL", err)
+		log.Fatal("Can't connect to OracleSQL", err)
 	}
 
 	var role = "guest"
@@ -77,10 +77,10 @@ func Insert(ctx context.Context, user models.Users) error {
 // Update user
 func Update(ctx context.Context, user models.Users, uname string) error {
 
-	db, err := config.MySQL()
+	db, err := config.OracleSQL()
 
 	if err != nil {
-		log.Fatal("Can't connect to MySQL", err)
+		log.Fatal("Can't connect to OracleSQL", err)
 	}
 
 	queryText := fmt.Sprintf("UPDATE %v set username ='%s', password ='%s', role ='%s' where username = %s",
@@ -103,10 +103,10 @@ func Update(ctx context.Context, user models.Users, uname string) error {
 
 // Delete user
 func Delete(ctx context.Context, uname string) error {
-	db, err := config.MySQL()
+	db, err := config.OracleSQL()
 
 	if err != nil {
-		log.Fatal("Can't connect to MySQL", err)
+		log.Fatal("Can't connect to OracleSQL", err)
 	}
 
 	queryText := fmt.Sprintf("DELETE FROM %v where username = %s", table, uname)
