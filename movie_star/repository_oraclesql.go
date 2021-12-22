@@ -1,4 +1,4 @@
-package movie_creator
+package movie_star
 
 import (
 	"api-mrdb/config"
@@ -11,13 +11,13 @@ import (
 )
 
 const (
-	table = "MOVIE-CREATOR"
+	table = "MOVIE-STAR"
 )
 
-// GetAll movie-creator
-func GetAll(ctx context.Context) ([]models.Movie_creator, error) {
+// GetAll movie-star
+func GetAll(ctx context.Context) ([]models.Movie_star, error) {
 
-	var movieCreators []models.Movie_creator
+	var movieStars []models.Movie_star
 
 	db, err := config.OracleSQL()
 
@@ -34,30 +34,30 @@ func GetAll(ctx context.Context) ([]models.Movie_creator, error) {
 	}
 
 	for rowQuery.Next() {
-		var movieCreator models.Movie_creator
+		var movieStar models.Movie_star
 
-		if err = rowQuery.Scan(&movieCreator.MovieId,
-			&movieCreator.CreatorId); err != nil {
+		if err = rowQuery.Scan(&movieStar.MovieId,
+			&movieStar.StarId); err != nil {
 			return nil, err
 		}
 
-		movieCreators = append(movieCreators, movieCreator)
+		movieStars = append(movieStars, movieStar)
 	}
 
-	return movieCreators, nil
+	return movieStars, nil
 }
 
-// Insert movie-creator
-func Insert(ctx context.Context, movieCreators models.Movie_creator) error {
+// Insert movie-star
+func Insert(ctx context.Context, movieCreators models.Movie_star) error {
 	db, err := config.OracleSQL()
 
 	if err != nil {
 		log.Fatal("Can't connect to OracleSQL", err)
 	}
 
-	queryText := fmt.Sprintf("INSERT INTO %v (movieid, creatorid) values('%v','%v)", table,
+	queryText := fmt.Sprintf("INSERT INTO %v (movieid, starid) values('%v','%v)", table,
 		movieCreators.MovieId,
-		movieCreators.CreatorId,
+		movieCreators.StarId,
 	)
 
 	_, err = db.ExecContext(ctx, queryText)
@@ -68,7 +68,7 @@ func Insert(ctx context.Context, movieCreators models.Movie_creator) error {
 	return nil
 }
 
-// Delete movie-creator
+// Delete movie-star
 func Delete(ctx context.Context, id int) error {
 	db, err := config.OracleSQL()
 
@@ -76,7 +76,7 @@ func Delete(ctx context.Context, id int) error {
 		log.Fatal("Can't connect to OracleSQL", err)
 	}
 
-	queryText := fmt.Sprintf("DELETE FROM %v where cretorid = %d", table, id)
+	queryText := fmt.Sprintf("DELETE FROM %v where starid = %d", table, id)
 
 	s, err := db.ExecContext(ctx, queryText)
 
