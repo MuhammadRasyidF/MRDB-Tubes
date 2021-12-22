@@ -68,7 +68,7 @@ func Insert(ctx context.Context, genre models.Tb_genres) error {
 }
 
 // Update genre
-func Update(ctx context.Context, genre models.Tb_genres, id string) error {
+func Update(ctx context.Context, genre models.Tb_genres, id int) error {
 
 	db, err := config.OracleSQL()
 
@@ -76,7 +76,7 @@ func Update(ctx context.Context, genre models.Tb_genres, id string) error {
 		log.Fatal("Can't connect to OracleSQL", err)
 	}
 
-	queryText := fmt.Sprintf("UPDATE %v set name ='%s' where genreid = %s",
+	queryText := fmt.Sprintf("UPDATE %v set name ='%s' where genreid = %d",
 		table,
 		genre.Name,
 		id,
@@ -93,14 +93,14 @@ func Update(ctx context.Context, genre models.Tb_genres, id string) error {
 }
 
 // Delete genre
-func Delete(ctx context.Context, id string) error {
+func Delete(ctx context.Context, id int) error {
 	db, err := config.OracleSQL()
 
 	if err != nil {
 		log.Fatal("Can't connect to OracleSQL", err)
 	}
 
-	queryText := fmt.Sprintf("DELETE FROM %v where genreid = %s", table, id)
+	queryText := fmt.Sprintf("DELETE FROM %v where genreid = %d", table, id)
 
 	s, err := db.ExecContext(ctx, queryText)
 

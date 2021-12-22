@@ -1,4 +1,4 @@
-package comment
+package movie
 
 import (
 	"api-mrdb/config"
@@ -11,13 +11,14 @@ import (
 )
 
 const (
-	table = "TB_COMMENT"
+	table          = "TB_MOVIES"
+	layoutDateTime = "2006-01-02 15:04:05"
 )
 
-// GetAll comment
-func GetAll(ctx context.Context) ([]models.Tb_comment, error) {
+// GetAll Movie
+func GetAll(ctx context.Context) ([]models.Tb_movies, error) {
 
-	var comments []models.Tb_comment
+	var movies []models.Tb_movies
 
 	db, err := config.OracleSQL()
 
@@ -25,7 +26,7 @@ func GetAll(ctx context.Context) ([]models.Tb_comment, error) {
 		log.Fatal("Cant connect to OracleSQL", err)
 	}
 
-	queryText := fmt.Sprintf("SELECT * FROM %v Order By commentid DESC", table)
+	queryText := fmt.Sprintf("SELECT * FROM %v Order By movieid DESC", table)
 
 	rowQuery, err := db.QueryContext(ctx, queryText)
 
@@ -34,35 +35,35 @@ func GetAll(ctx context.Context) ([]models.Tb_comment, error) {
 	}
 
 	for rowQuery.Next() {
-		var comment models.Tb_comment
+		var movie models.Tb_movies
 
-		if err = rowQuery.Scan(&comment.CommentId,
-			comment.Comment,
-			comment.UserId,
-			comment.MovieId,
-			comment.ParentComment); err != nil {
+		if err = rowQuery.Scan(&movie.MovieId,
+			&movie.Name,
+			&movie.Description,
+			&movie.ReleaseDate,
+			&movie.ImageUrl); err != nil {
 			return nil, err
 		}
 
-		comments = append(comments, comment)
+		movies = append(movies, movie)
 	}
 
-	return comments, nil
+	return movies, nil
 }
 
-// Insert comment
-func Insert(ctx context.Context, comment models.Tb_comment) error {
+// Insert Movie
+func Insert(ctx context.Context, movie models.Tb_movies) error {
 	db, err := config.OracleSQL()
 
 	if err != nil {
 		log.Fatal("Can't connect to OracleSQL", err)
 	}
 
-	queryText := fmt.Sprintf("INSERT INTO %v (comment, userid, movieid, parentcomment) values('%v','%v','%v','%v')", table,
-		comment.Comment,
-		comment.UserId,
-		comment.MovieId,
-		comment.ParentComment,
+	queryText := fmt.Sprintf("INSERT INTO %v (name, description, releasedate, imageurl) values('%v', '%v', '%v', '%v')", table,
+		movie.Name,
+		movie.Description,
+		movie.ReleaseDate,
+		movie.ImageUrl,
 	)
 
 	_, err = db.ExecContext(ctx, queryText)
@@ -73,8 +74,8 @@ func Insert(ctx context.Context, comment models.Tb_comment) error {
 	return nil
 }
 
-// Update comment
-func Update(ctx context.Context, comment models.Tb_comment, id int) error {
+// Update Movie
+func Update(ctx context.Context, movie models.Tb_movies, id int) error {
 
 	db, err := config.OracleSQL()
 
@@ -82,9 +83,12 @@ func Update(ctx context.Context, comment models.Tb_comment, id int) error {
 		log.Fatal("Can't connect to OracleSQL", err)
 	}
 
-	queryText := fmt.Sprintf("UPDATE %v set comment ='%s' where commentid = %d",
+	queryText := fmt.Sprintf("UPDATE %v set name ='%s', description ='%s', releasedate ='%s', imageurl = '%s' where movieid = %d",
 		table,
-		comment.Comment,
+		movie.Name,
+		movie.Description,
+		movie.ReleaseDate,
+		movie.ImageUrl,
 		id,
 	)
 	fmt.Println(queryText)
@@ -98,7 +102,7 @@ func Update(ctx context.Context, comment models.Tb_comment, id int) error {
 	return nil
 }
 
-// Delete comment
+// Delete Movie
 func Delete(ctx context.Context, id int) error {
 	db, err := config.OracleSQL()
 
@@ -106,7 +110,7 @@ func Delete(ctx context.Context, id int) error {
 		log.Fatal("Can't connect to OracleSQL", err)
 	}
 
-	queryText := fmt.Sprintf("DELETE FROM %v where commentid = %d", table, id)
+	queryText := fmt.Sprintf("DELETE FROM %v where movieid = %d", table, id)
 
 	s, err := db.ExecContext(ctx, queryText)
 

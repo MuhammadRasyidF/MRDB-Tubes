@@ -59,7 +59,7 @@ type (
 	}
 
 	//many to many table here
-	//movie_creator
+	//movie-creator
 	Movie_creator struct {
 		MovieId   int `json:"movieid"`
 		CreatorId int `json:"creatorid"`

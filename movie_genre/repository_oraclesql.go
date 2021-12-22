@@ -1,4 +1,4 @@
-package movie
+package movie_genre
 
 import (
 	"api-mrdb/config"
@@ -11,14 +11,13 @@ import (
 )
 
 const (
-	table          = "TB_MOVIES"
-	layoutDateTime = "2006-01-02 15:04:05"
+	table = "MOVIE-GENRE"
 )
 
-// GetAll Movie
-func GetAll(ctx context.Context) ([]models.Tb_movies, error) {
+// GetAll movie-genre
+func GetAll(ctx context.Context) ([]models.Movie_genre, error) {
 
-	var movies []models.Tb_movies
+	var movieGenres []models.Movie_genre
 
 	db, err := config.OracleSQL()
 
@@ -35,35 +34,30 @@ func GetAll(ctx context.Context) ([]models.Tb_movies, error) {
 	}
 
 	for rowQuery.Next() {
-		var movie models.Tb_movies
+		var movieGenre models.Movie_genre
 
-		if err = rowQuery.Scan(&movie.MovieId,
-			&movie.Name,
-			&movie.Description,
-			&movie.ReleaseDate,
-			&movie.ImageUrl); err != nil {
+		if err = rowQuery.Scan(&movieGenre.MovieId,
+			&movieGenre.GenreId); err != nil {
 			return nil, err
 		}
 
-		movies = append(movies, movie)
+		movieGenres = append(movieGenres, movieGenre)
 	}
 
-	return movies, nil
+	return movieGenres, nil
 }
 
-// Insert Movie
-func Insert(ctx context.Context, movie models.Tb_movies) error {
+// Insert movie-genre
+func Insert(ctx context.Context, movieGenre models.Movie_genre) error {
 	db, err := config.OracleSQL()
 
 	if err != nil {
 		log.Fatal("Can't connect to OracleSQL", err)
 	}
 
-	queryText := fmt.Sprintf("INSERT INTO %v (name, description, releasedate, imageurl) values('%v', '%v', '%v', '%v')", table,
-		movie.Name,
-		movie.Description,
-		movie.ReleaseDate,
-		movie.ImageUrl,
+	queryText := fmt.Sprintf("INSERT INTO %v (movieid, genreid) values('%v','%v')", table,
+		movieGenre.MovieId,
+		movieGenre.GenreId,
 	)
 
 	_, err = db.ExecContext(ctx, queryText)
@@ -74,8 +68,8 @@ func Insert(ctx context.Context, movie models.Tb_movies) error {
 	return nil
 }
 
-// Update Movie
-func Update(ctx context.Context, movie models.Tb_movies, id string) error {
+// Update movie-genre
+func Update(ctx context.Context, movieGenre models.Movie_genre, movieId int) error {
 
 	db, err := config.OracleSQL()
 
@@ -83,13 +77,10 @@ func Update(ctx context.Context, movie models.Tb_movies, id string) error {
 		log.Fatal("Can't connect to OracleSQL", err)
 	}
 
-	queryText := fmt.Sprintf("UPDATE %v set name ='%s', description ='%s', releasedate ='%s', imageurl = '%s' where movieid = %s",
+	queryText := fmt.Sprintf("UPDATE %v set genreid = %d where movieid = %d",
 		table,
-		movie.Name,
-		movie.Description,
-		movie.ReleaseDate,
-		movie.ImageUrl,
-		id,
+		movieGenre.GenreId,
+		movieId,
 	)
 	fmt.Println(queryText)
 
@@ -102,15 +93,15 @@ func Update(ctx context.Context, movie models.Tb_movies, id string) error {
 	return nil
 }
 
-// Delete Movie
-func Delete(ctx context.Context, id string) error {
+// Delete movie-genre
+func Delete(ctx context.Context, genreId int, movieId int) error {
 	db, err := config.OracleSQL()
 
 	if err != nil {
 		log.Fatal("Can't connect to OracleSQL", err)
 	}
 
-	queryText := fmt.Sprintf("DELETE FROM %v where movieid = %s", table, id)
+	queryText := fmt.Sprintf("DELETE FROM %v where genreid = %v AND movieid = %v", table, genreId, movieId)
 
 	s, err := db.ExecContext(ctx, queryText)
 
