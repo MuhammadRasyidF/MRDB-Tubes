@@ -1,8 +1,8 @@
 package genre
 
 import (
-	"api-mysql/config"
-	"api-mysql/models"
+	"api-mrdb/config"
+	"api-mrdb/models"
 	"context"
 	"database/sql"
 	"errors"
@@ -11,22 +11,21 @@ import (
 )
 
 const (
-	table          = "genre"
-	layoutDateTime = "2021-09-27 03:05:05"
+	table = "TB_GENRES"
 )
 
 // GetAll genre
-func GetAll(ctx context.Context) ([]models.Genre, error) {
+func GetAll(ctx context.Context) ([]models.Tb_genres, error) {
 
-	var genres []models.Genre
+	var genres []models.Tb_genres
 
-	db, err := config.MySQL()
+	db, err := config.OracleSQL()
 
 	if err != nil {
-		log.Fatal("Cant connect to MySQL", err)
+		log.Fatal("Cant connect to OracleSQL", err)
 	}
 
-	queryText := fmt.Sprintf("SELECT * FROM %v Order By genre_id DESC", table)
+	queryText := fmt.Sprintf("SELECT * FROM %v Order By genreid DESC", table)
 
 	rowQuery, err := db.QueryContext(ctx, queryText)
 
@@ -35,9 +34,9 @@ func GetAll(ctx context.Context) ([]models.Genre, error) {
 	}
 
 	for rowQuery.Next() {
-		var genre models.Genre
+		var genre models.Tb_genres
 
-		if err = rowQuery.Scan(&genre.Genre_id,
+		if err = rowQuery.Scan(&genre.GenreId,
 			&genre.Name); err != nil {
 			return nil, err
 		}
@@ -49,15 +48,15 @@ func GetAll(ctx context.Context) ([]models.Genre, error) {
 }
 
 // Insert genre
-func Insert(ctx context.Context, genre models.Genre) error {
-	db, err := config.MySQL()
+func Insert(ctx context.Context, genre models.Tb_genres) error {
+	db, err := config.OracleSQL()
 
 	if err != nil {
-		log.Fatal("Can't connect to MySQL", err)
+		log.Fatal("Can't connect to OracleSQL", err)
 	}
 
-	queryText := fmt.Sprintf("INSERT INTO %v (genre_id, name) values('%v','%v')", table,
-		genre.Genre_id,
+	queryText := fmt.Sprintf("INSERT INTO %v (genreid, name) values('%v','%v')", table,
+		genre.GenreId,
 		genre.Name,
 	)
 
@@ -70,15 +69,15 @@ func Insert(ctx context.Context, genre models.Genre) error {
 }
 
 // Update genre
-func Update(ctx context.Context, genre models.Genre, id string) error {
+func Update(ctx context.Context, genre models.Tb_genres, id string) error {
 
-	db, err := config.MySQL()
+	db, err := config.OracleSQL()
 
 	if err != nil {
-		log.Fatal("Can't connect to MySQL", err)
+		log.Fatal("Can't connect to OracleSQL", err)
 	}
 
-	queryText := fmt.Sprintf("UPDATE %v set name ='%s' where genre_id = %s",
+	queryText := fmt.Sprintf("UPDATE %v set name ='%s' where genreid = %s",
 		table,
 		genre.Name,
 		id,
@@ -96,13 +95,13 @@ func Update(ctx context.Context, genre models.Genre, id string) error {
 
 // Delete genre
 func Delete(ctx context.Context, id string) error {
-	db, err := config.MySQL()
+	db, err := config.OracleSQL()
 
 	if err != nil {
-		log.Fatal("Can't connect to MySQL", err)
+		log.Fatal("Can't connect to OracleSQL", err)
 	}
 
-	queryText := fmt.Sprintf("DELETE FROM %v where genre_id = %s", table, id)
+	queryText := fmt.Sprintf("DELETE FROM %v where genreid = %s", table, id)
 
 	s, err := db.ExecContext(ctx, queryText)
 

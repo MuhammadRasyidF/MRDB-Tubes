@@ -11,14 +11,13 @@ import (
 )
 
 const (
-	table          = "creators"
-	layoutDateTime = "2021-09-27 03:05:05"
+	table = "TB_CREATORS"
 )
 
 // GetAll Creators
-func GetAll(ctx context.Context) ([]models.Creators, error) {
+func GetAll(ctx context.Context) ([]models.Tb_creators, error) {
 
-	var Creators []models.Creators
+	var creators []models.Tb_creators
 
 	db, err := config.OracleSQL()
 
@@ -26,7 +25,7 @@ func GetAll(ctx context.Context) ([]models.Creators, error) {
 		log.Fatal("Cant connect to OracleSQL", err)
 	}
 
-	queryText := fmt.Sprintf("SELECT * FROM %v Order By Creator_id DESC", table)
+	queryText := fmt.Sprintf("SELECT * FROM %v Order By creatorid DESC", table)
 
 	rowQuery, err := db.QueryContext(ctx, queryText)
 
@@ -35,21 +34,21 @@ func GetAll(ctx context.Context) ([]models.Creators, error) {
 	}
 
 	for rowQuery.Next() {
-		var Creator models.Creators
+		var creator models.Tb_creators
 
-		if err = rowQuery.Scan(&Creator.Creator_id,
-			&Creator.Name); err != nil {
+		if err = rowQuery.Scan(&creator.CreatorId,
+			&creator.Name); err != nil {
 			return nil, err
 		}
 
-		Creators = append(Creators, Creator)
+		creators = append(creators, creator)
 	}
 
-	return Creators, nil
+	return creators, nil
 }
 
 // Insert Creators
-func Insert(ctx context.Context, Creator models.Creators) error {
+func Insert(ctx context.Context, creator models.Tb_creators) error {
 	db, err := config.OracleSQL()
 
 	if err != nil {
@@ -57,8 +56,8 @@ func Insert(ctx context.Context, Creator models.Creators) error {
 	}
 
 	queryText := fmt.Sprintf("INSERT INTO %v (Creator_id, name) values('%v','%v')", table,
-		Creator.Creator_id,
-		Creator.Name,
+		creator.CreatorId,
+		creator.Name,
 	)
 
 	_, err = db.ExecContext(ctx, queryText)
@@ -70,7 +69,7 @@ func Insert(ctx context.Context, Creator models.Creators) error {
 }
 
 // Update Creators
-func Update(ctx context.Context, Creator models.Creators, uname string) error {
+func Update(ctx context.Context, creator models.Tb_creators, uname string) error {
 
 	db, err := config.OracleSQL()
 
@@ -80,7 +79,7 @@ func Update(ctx context.Context, Creator models.Creators, uname string) error {
 
 	queryText := fmt.Sprintf("UPDATE %v set name ='%s' where name = %s",
 		table,
-		Creator.Name,
+		creator.Name,
 		uname,
 	)
 	fmt.Println(queryText)
