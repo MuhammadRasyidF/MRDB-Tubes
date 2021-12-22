@@ -1,8 +1,8 @@
 package rating
 
 import (
-	"api-mysql/config"
-	"api-mysql/models"
+	"api-mrdb/config"
+	"api-mrdb/models"
 	"context"
 	"database/sql"
 	"errors"
@@ -11,8 +11,7 @@ import (
 )
 
 const (
-	table          = "rating"
-	layoutDateTime = "2021-09-27 03:05:05"
+	table = "RATING"
 )
 
 // GetAll rating
@@ -20,13 +19,13 @@ func GetAll(ctx context.Context) ([]models.Rating, error) {
 
 	var ratings []models.Rating
 
-	db, err := config.MySQL()
+	db, err := config.OracleSQL()
 
 	if err != nil {
-		log.Fatal("Cant connect to MySQL", err)
+		log.Fatal("Cant connect to OracleSQL", err)
 	}
 
-	queryText := fmt.Sprintf("SELECT * FROM %v Order By rate_id DESC", table)
+	queryText := fmt.Sprintf("SELECT * FROM %v Order By movieid DESC", table)
 
 	rowQuery, err := db.QueryContext(ctx, queryText)
 
@@ -37,7 +36,8 @@ func GetAll(ctx context.Context) ([]models.Rating, error) {
 	for rowQuery.Next() {
 		var rating models.Rating
 
-		if err = rowQuery.Scan(&rating.Rate_id,
+		if err = rowQuery.Scan(&rating.MovieId,
+			&rating.UserId,
 			&rating.Rate); err != nil {
 			return nil, err
 		}
@@ -50,14 +50,15 @@ func GetAll(ctx context.Context) ([]models.Rating, error) {
 
 // Insert rating
 func Insert(ctx context.Context, rating models.Rating) error {
-	db, err := config.MySQL()
+	db, err := config.OracleSQL()
 
 	if err != nil {
-		log.Fatal("Can't connect to MySQL", err)
+		log.Fatal("Can't connect to OracleSQL", err)
 	}
 
-	queryText := fmt.Sprintf("INSERT INTO %v (rate_id, rate) values('%v','%v')", table,
-		rating.Rate_id,
+	queryText := fmt.Sprintf("INSERT INTO %v (movieid, userid, rate) values('%v','%v','%v')", table,
+		rating.MovieId,
+		rating.UserId,
 		rating.Rate,
 	)
 
@@ -70,18 +71,19 @@ func Insert(ctx context.Context, rating models.Rating) error {
 }
 
 // Update rating
-func Update(ctx context.Context, rating models.Rating, id string) error {
+func Update(ctx context.Context, rating models.Rating, movieid int, userid int) error {
 
-	db, err := config.MySQL()
+	db, err := config.OracleSQL()
 
 	if err != nil {
-		log.Fatal("Can't connect to MySQL", err)
+		log.Fatal("Can't connect to OracleSQL", err)
 	}
 
-	queryText := fmt.Sprintf("UPDATE %v set rate ='%f' where rate_id = %s",
+	queryText := fmt.Sprintf("UPDATE %v set rate ='%v' where movieid = %d AND userid = %d",
 		table,
 		rating.Rate,
-		id,
+		movieid,
+		userid,
 	)
 	fmt.Println(queryText)
 
@@ -95,14 +97,14 @@ func Update(ctx context.Context, rating models.Rating, id string) error {
 }
 
 // Delete rating
-func Delete(ctx context.Context, id string) error {
-	db, err := config.MySQL()
+func Delete(ctx context.Context, movieid int, userid int) error {
+	db, err := config.OracleSQL()
 
 	if err != nil {
-		log.Fatal("Can't connect to MySQL", err)
+		log.Fatal("Can't connect to OracleSQL", err)
 	}
 
-	queryText := fmt.Sprintf("DELETE FROM %v where rate_id = %s", table, id)
+	queryText := fmt.Sprintf("DELETE FROM %v where movieid = %d AND userid = %d", table, movieid, userid)
 
 	s, err := db.ExecContext(ctx, queryText)
 
