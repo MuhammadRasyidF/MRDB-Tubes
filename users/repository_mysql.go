@@ -11,13 +11,13 @@ import (
 )
 
 const (
-	table          = "users"
+	table          = "TB_USERS"
 	layoutDateTime = "2021-09-27 03:05:05"
 )
 
 // GetAll user
-func GetAll(ctx context.Context) ([]models.Users, error) {
-	var users []models.Users
+func GetAll(ctx context.Context) ([]models.Tb_users, error) {
+	var users []models.Tb_users
 
 	db, err := config.OracleSQL()
 
@@ -25,7 +25,7 @@ func GetAll(ctx context.Context) ([]models.Users, error) {
 		log.Fatal("Cant connect to OracleSQL", err)
 	}
 
-	queryText := fmt.Sprintf("SELECT * FROM %v Order By user_id DESC", table)
+	queryText := fmt.Sprintf("SELECT * FROM %v Order By userid DESC", table)
 
 	rowQuery, err := db.QueryContext(ctx, queryText)
 
@@ -34,9 +34,8 @@ func GetAll(ctx context.Context) ([]models.Users, error) {
 	}
 
 	for rowQuery.Next() {
-		var user models.Users
-
-		if err = rowQuery.Scan(&user.User_id,
+		var user models.Tb_users
+		if err = rowQuery.Scan(&user.UserId,
 			&user.Username,
 			&user.Password,
 			&user.Role); err != nil {
@@ -50,7 +49,7 @@ func GetAll(ctx context.Context) ([]models.Users, error) {
 }
 
 // Insert user
-func Insert(ctx context.Context, user models.Users) error {
+func Insert(ctx context.Context, user models.Tb_users) error {
 	db, err := config.OracleSQL()
 
 	if err != nil {
@@ -59,8 +58,7 @@ func Insert(ctx context.Context, user models.Users) error {
 
 	var role = "guest"
 
-	queryText := fmt.Sprintf("INSERT INTO %v (user_id, username, password, role) values('%v','%v', '%v', '%v')", table,
-		user.User_id,
+	queryText := fmt.Sprintf("INSERT INTO %v (username, password, role) values('%v', '%v', '%v')", table,
 		user.Username,
 		user.Password,
 		role,
@@ -75,7 +73,7 @@ func Insert(ctx context.Context, user models.Users) error {
 }
 
 // Update user
-func Update(ctx context.Context, user models.Users, uname string) error {
+func Update(ctx context.Context, user models.Tb_users, uname string) error {
 
 	db, err := config.OracleSQL()
 
