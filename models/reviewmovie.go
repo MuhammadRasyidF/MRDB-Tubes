@@ -11,11 +11,12 @@ type (
 
 	//movie
 	Tb_movies struct {
-		MovieId     int    `json:"movieid"`
-		Name        string `json:"name"`
-		Description string `json:"description"`
-		ReleaseDate string `json:"releasedate"`
-		ImageUrl    string `json:"imageurl"`
+		MovieId     int     `json:"movieid"`
+		Name        string  `json:"name"`
+		Description string  `json:"description"`
+		ReleaseDate string  `json:"releasedate"`
+		ImageUrl    string  `json:"imageurl"`
+		AverageRate float32 `json:"avgrating"`
 	}
 
 	//genre
